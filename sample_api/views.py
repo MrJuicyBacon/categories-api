@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from .models import Category
+from rest_framework import generics
+from .serializers import CategoryRetrieveSerializer
 
-# Create your views here.
+
+#  View for retrieving a single category
+class CategoryRetrieveView(generics.RetrieveAPIView):
+    serializer_class = CategoryRetrieveSerializer
+    queryset = Category.objects.all()
