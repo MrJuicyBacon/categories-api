@@ -30,3 +30,10 @@ class CategoryRetrieveSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_siblings(obj):
         return SimpleCategorySerializer(obj.siblings(), many=True).data
+
+
+class CategoryCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Category
+        fields = ['name']
