@@ -1,5 +1,6 @@
 from .models import Category
 from rest_framework import serializers
+from django.db import transaction
 
 
 # Serializer for internal items
@@ -56,10 +57,11 @@ class CategoryCreateSerializer(serializers.ModelSerializer):
         return True
 
     def create(self, validated_data):
-        main_category = Category(name=validated_data['name'])
-        main_category.save()
-        if 'children' in validated_data:
-            self.create_children_objects_from_dict(main_category, validated_data['children'])
+        with transaction.atomic():
+            main_category = Category(name=validated_data['name'])
+            main_category.save()
+            if 'children' in validated_data:
+                self.create_children_objects_from_dict(main_category, validated_data['children'])
         return main_category
 
     class Meta:
