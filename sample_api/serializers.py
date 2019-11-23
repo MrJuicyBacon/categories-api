@@ -67,3 +67,7 @@ class CategoryCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['name', 'children']
+
+    def to_representation(self, instance):
+        serializer = CategoryRetrieveSerializer(instance)
+        return serializer.data
