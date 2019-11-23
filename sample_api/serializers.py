@@ -9,7 +9,7 @@ class SimpleCategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
-# Main serializer for Category objects
+# Main serializer for retrieving Category objects
 class CategoryRetrieveSerializer(serializers.ModelSerializer):
     parents = serializers.SerializerMethodField()
     children = serializers.SerializerMethodField()
@@ -32,6 +32,7 @@ class CategoryRetrieveSerializer(serializers.ModelSerializer):
         return SimpleCategorySerializer(obj.siblings(), many=True).data
 
 
+# Accessory field for CategoryCreateSerializer
 class ChildrenField(serializers.ListField):
     def to_representation(self, value):
         return
@@ -42,6 +43,7 @@ class ChildrenField(serializers.ListField):
         return serializer.validated_data
 
 
+# Main serializer for creating Category objects
 class CategoryCreateSerializer(serializers.ModelSerializer):
     children = ChildrenField(required=False)
 
