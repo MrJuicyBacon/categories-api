@@ -32,8 +32,34 @@ class CategoryRetrieveSerializer(serializers.ModelSerializer):
         return SimpleCategorySerializer(obj.siblings(), many=True).data
 
 
+class ChildrenField(serializers.ListField):
+    def to_representation(self, value):
+        return
+
+    def to_internal_value(self, data):
+        serializer = CategoryCreateSerializer(data=data, many=True)
+        serializer.is_valid(raise_exception=True)
+        return serializer.validated_data
+
+
 class CategoryCreateSerializer(serializers.ModelSerializer):
+    children = ChildrenField(required=False)
+
+    def create_children_objects_from_dict(self, parent_object, children):
+        for child in children:
+            child_object = Category(name=child['name'], parent=parent_object)
+            child_object.save()
+            if 'children' in child:
+                self.create_children_objects_from_dict(child_object, child['children'])
+        return True
+
+    def create(self, validated_data):
+        main_category = Category(name=validated_data['name'])
+        main_category.save()
+        if 'children' in validated_data:
+            self.create_children_objects_from_dict(main_category, validated_data['children'])
+        return main_category
 
     class Meta:
         model = Category
-        fields = ['name']
+        fields = ['name', 'children']
