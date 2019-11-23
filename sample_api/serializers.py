@@ -48,20 +48,20 @@ class ChildrenField(serializers.ListField):
 class CategoryCreateSerializer(serializers.ModelSerializer):
     children = ChildrenField(required=False)
 
-    def create_children_objects_from_dict(self, parent_object, children):
+    def _create_children_objects_from_dict(self, validated_data, parent=None):
+        children = []
+        if 'children' in validated_data:
+            children = validated_data['children']
+            del validated_data['children']
+        category = Category(**validated_data, parent=parent)
+        category.save()
         for child in children:
-            child_object = Category(name=child['name'], parent=parent_object)
-            child_object.save()
-            if 'children' in child:
-                self.create_children_objects_from_dict(child_object, child['children'])
-        return True
+            self._create_children_objects_from_dict(child, category)
+        return category
 
     def create(self, validated_data):
         with transaction.atomic():
-            main_category = Category(name=validated_data['name'])
-            main_category.save()
-            if 'children' in validated_data:
-                self.create_children_objects_from_dict(main_category, validated_data['children'])
+            main_category = self._create_children_objects_from_dict(validated_data)
         return main_category
 
     class Meta:
