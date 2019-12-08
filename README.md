@@ -4,7 +4,7 @@ Simple API project example in Django framework with DRF.
 
 ## Requirements
 * Required python version: 3.6+
-* Dependencies: `Django==2.2.7`, `djangorestframework==3.10.3`
+* Dependencies: `Django==2.2.8`, `djangorestframework==3.10.3`
 
 ## Usage
 Before running, install dependencies (`pip install -r requirements.txt`)  
